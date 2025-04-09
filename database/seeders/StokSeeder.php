@@ -15,10 +15,11 @@ class StokSeeder extends Seeder
     public function run(): void
     {
         $data = [];
-        for ($i = 1; $i <= 10; $i++) { // Hanya membuat 10 data stok 
+        for ($i = 1; $i <= 10; $i++) { 
             $data[] = [
                 'stok_id' => $i,
-                'barang_id' => $i, // Menggunakan 10 pertama
+                'supplier_id' => ceil($i / 5),
+                'barang_id' => $i,
                 'user_id' => 1, // Stok dimasukkan oleh Admin (user_id = 1)
                 'stok_tanggal' => Carbon::now()->subDays(rand(1, 30)),
                 'stok_jumlah' => rand(10, 100), // Stok acak antara 10 - 100

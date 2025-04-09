@@ -16,24 +16,10 @@ class PenjualanDetailSeeder extends Seeder
         $data = [];
         $detail_id = 1;
 
-        // Ambil daftar barang_id yang tersedia dari tabel m_barang
-        $barang_ids = DB::table('m_barang')->pluck('barang_id')->toArray();
-
-        if (empty($barang_ids)) {
-            return; // Hentikan seeder jika tidak ada barang yang tersedia
-        }
-
-        // Loop untuk 10 transaksi penjualan
-        for ($i = 1; $i <= 10; $i++) {
-            // 3 barang untuk setiap transaksi penjualan
-            for ($j = 1; $j <= 3; $j++) {
-                $barang_id = $barang_ids[array_rand($barang_ids)]; // Pilih barang yang valid
+        for ($i = 1; $i <= 10; $i++) { // Loop untuk 10 transaksi
+            for ($j = 1; $j <= 3; $j++) { // 3 barang per transaksi
+                $barang_id = rand(1, 10); // Barang acak dari 1 sampai 10
                 $harga = DB::table('m_barang')->where('barang_id', $barang_id)->value('harga_jual');
-
-                if ($harga === null) {
-                    continue; // Lewati barang jika harga tidak ditemukan
-                }
-
                 $jumlah = rand(1, 5); // Jumlah barang antara 1 sampai 5
 
                 $data[] = [
@@ -48,8 +34,6 @@ class PenjualanDetailSeeder extends Seeder
             }
         }
 
-        if (!empty($data)) {
-            DB::table('t_penjualan_detail')->insert($data);
-        }
+        DB::table('t_penjualan_detail')->insert($data);
     }
 }
