@@ -37,16 +37,34 @@ class UserController extends Controller
         // ];
         // UserModel::create($data);
 
-        $data = [
-            'level_id' => 2,
-            'username' => 'manager_tiga',
-            'nama' => 'Manager 3',
-            'password' => Hash::make('12345')
-        ];
-        UserModel::create($data);
+        // $data = [
+        //     'level_id' => 2,
+        //     'username' => 'manager_tiga',
+        //     'nama' => 'Manager 3',
+        //     'password' => Hash::make('12345')
+        // ];
+        // UserModel::create($data);
 
-        // Coba akses model user model 
-        $user = UserModel::all();
+        // // Coba akses model user model 
+        // $user = UserModel::all();
+        // return view('user', ['data' => $user]);
+
+        // Jobsheet 4 (2.1 Retrieving Single Model)
+        // $user = UserModel::find(1);
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 4
+        // $user = UserModel::where('level_id', 1)->first();
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 6
+        // $user = UserModel::firstWhere('level_id', 1);
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 8
+        $user = UserModel::findOr(20,['username', 'nama'], function(){
+            abort(404);
+        });
         return view('user', ['data' => $user]);
     }
 }
