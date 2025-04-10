@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LevelController;
-
+use App\Http\Controllers\KategoriController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,3 +20,6 @@ Route::get('/', function () {
 
 // Praktikum 4 Jobsheet 3 (Implementasi DB Facade)
 Route::get('/level', [LevelController::class, 'index']);
+
+// Praktikum 5 Jobsheet 3 
+Route ::get('/kategori', [KategoriController::class, 'index']);
