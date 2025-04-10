@@ -76,8 +76,60 @@ class UserController extends Controller
         // return view('user', ['data' => $user]);
 
         // Jobsheet 4 (2.3 Retreiving Aggregrates)
-        $user = UserModel::where('level_id', 2)->count();
-        //dd($user); <--- artinya Dump and Die → jadi semua kode setelah dd() tidak akan dijalankan 
+        // $user = UserModel::where('level_id', 2)->count();
+        // //dd($user); <--- artinya Dump and Die → jadi semua kode setelah dd() tidak akan dijalankan 
+        // return view('user', ['data' => $user]);
+
+        // Jobsheet 4 (2.4 Retreiving or Creating Models)
+        // $user = UserModel::firstOrCreate(
+        //     [
+        //         'username' => 'manager',
+        //         'nama' => 'Manager',
+        //     ],
+        // );
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 4
+        // $user = UserModel::firstOrCreate(
+        //     [
+        //         'username' => 'manager22', 
+        //         'nama' => 'Manager Dua Dua', 
+        //         'password' => Hash::make('12345'),
+        //         'level_id' => 2,
+        //     ],
+        // );
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 6
+        // $user = UserModel::firstOrCreate(
+        //     [
+        //         'username' => 'manager',
+        //         'nama' => 'Manager',
+        //     ],
+        // );
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 8
+        // $user = UserModel::firstOrCreate(
+        //     [
+        //         'username' => 'manager33',
+        //         'nama' => 'Manager Tiga Tiga',
+        //         'password' => Hash::make('12345'),
+        //         'level_id' => 2,
+        //     ],
+        // );
+        // return view('user', ['data' => $user]);
+
+        // Modifikasi nomor 10 (Output error karena ada duplikasi data)
+        $user = UserModel::firstOrNew(
+            [
+                'username' => 'manager33',
+                'nama' => 'Manager Tiga Tiga',
+                'password' => Hash::make('12345'),
+                'level_id' => 2,
+            ],
+        );
+        $user->save();
         return view('user', ['data' => $user]);
     }
 }
