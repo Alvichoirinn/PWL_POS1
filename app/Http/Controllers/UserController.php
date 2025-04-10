@@ -72,7 +72,12 @@ class UserController extends Controller
         // return view('user', ['data' => $user]);
 
         // Modifikasi nomor 3
-        $user = UserModel::where('username', 'manager9')->firstOrFail();
+        // $user = UserModel::where('username', 'manager9')->firstOrFail();
+        // return view('user', ['data' => $user]);
+
+        // Jobsheet 4 (2.3 Retreiving Aggregrates)
+        $user = UserModel::where('level_id', 2)->count();
+        //dd($user); <--- artinya Dump and Die → jadi semua kode setelah dd() tidak akan dijalankan 
         return view('user', ['data' => $user]);
     }
 }
