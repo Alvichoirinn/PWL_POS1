@@ -179,7 +179,12 @@ class UserController extends Controller
         // dd($user->wasChanged(['nama', 'username'])); //true
 
         // Jobsheet 4 (2.6 Create, Read, Update, Delete (CRUD)
-        $user = UserModel::all();
+        // $user = UserModel::all();
+        // return view('user', ['data' => $user]);
+
+        // jobsheet 4 (2.7 Relationships)
+        $user = UserModel::with('level')->get();
+        // dd($user);
         return view('user', ['data' => $user]);
     }
 
@@ -231,5 +236,7 @@ class UserController extends Controller
 
         return redirect('/user');
     }
+
+
 }
 
