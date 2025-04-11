@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WelcomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,3 +44,6 @@ Route::put('/user/ubah_simpan/{id}', [UserController::class, 'ubah_simpan']);
 
 // Praktikum 2.6 Jobsheet 4 nomor 18
 Route::get('/user/hapus/{id}', [UserController::class, 'hapus']);
+
+// Praktikum 2 (Penerapan Layouting) Jobsheet 5 nomor 4
+Route::get('/', [WelcomeController::class, 'index']);
