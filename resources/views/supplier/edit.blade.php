@@ -41,7 +41,7 @@
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-2 control-label col-form-label">Alamat</label>
+                        <label class="col-2 control-label col-form-label">Alamat Supplier</label>
                         <div class="col-10">
                             <input type="text" class="form-control" id="supplier_alamat" name="supplier_alamat"
                                 value="{{ old('supplier_alamat', $supplier->supplier_alamat) }}" required>

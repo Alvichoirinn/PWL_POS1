@@ -19,11 +19,11 @@
                         <td>{{ $level->level_id }}</td> <!-- Corrected syntax for accessing level_id -->
                     </tr>
                     <tr>
-                        <th>Level</th>
+                        <th>Kode Level</th>
                         <td>{{ $level->level_kode }}</td> <!-- Corrected syntax for accessing level_kode -->
                     </tr>
                     <tr>
-                        <th>Nama</th>
+                        <th>Nama Level</th>
                         <td>{{ $level->level_nama }}</td> <!-- Corrected syntax for accessing nama_level -->
                     </tr>
                 </table>

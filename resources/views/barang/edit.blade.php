@@ -19,7 +19,7 @@
                 {!! method_field('PUT') !!}
 
                 <div class="form-group row">
-                    <label class="col-2 control-label col-form-label">Kategori ID</label>
+                    <label class="col-2 control-label col-form-label">Kategori Nama</label>
                     <div class="col-10">
                         <input type="number" class="form-control" id="kategori_id" name="kategori_id"
                                value="{{ old('kategori_id', $barang->kategori_id) }}" required>

@@ -10,11 +10,11 @@
                 @csrf
 
                 <div class="form-group row">
-                    <label class="col-2 control-label col-form-label">Kategori ID</label>
+                    <label class="col-2 control-label col-form-label">Kategori Nama</label>
                     <div class="col-10">
-                        <input type="number" class="form-control" id="kategori_id" name="kategori_id"
-                            value="{{ old('kategori_id') }}" required>
-                        @error('kategori_id')
+                        <input type="number" class="form-control" id="kategori_nama" name="kategori_nama"
+                            value="{{ old('kategori_nama') }}" required>
+                        @error('kategori_nama')
                             <small class="form-text text-danger">{{ $message }}</small>
                         @enderror
                     </div>
