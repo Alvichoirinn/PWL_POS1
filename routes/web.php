@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +19,14 @@ use App\Http\Controllers\BarangController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// Jobsheet 7 Praktikum 1 nomor 5
+Route::pattern('id', '[0-9]+'); // artinya ketika ada parameter {id}, maka harus beruapa angka
+
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'postlogin']);
+Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
+
+Route::middleware(['auth'])->group(function(){ // artinya semua route di dalam group ini harus login dulu
 
 Route::get('/', function () {
     return view('welcome');
@@ -138,4 +147,7 @@ Route::group(['prefix' => 'barang'], function() {
     Route::get('/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // untuk tampilkan form confirm delete user Ajax (jobsheet 6)
     Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // untuk hapus data user ajax (jobsheet 6)
     Route::delete('/{id}', [BarangController::class, 'destroy']); // Hapus barang
+});
+
+
 });
