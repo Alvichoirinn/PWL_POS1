@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as  Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 // class UserModel extends Model 
 class UserModel extends Authenticatable
@@ -20,10 +20,21 @@ class UserModel extends Authenticatable
     protected $hidden = ['password']; // jangan di tampilkan saat select
 
     protected $casts = ['password' => 'hashed']; // casting password agar otomatis di hash 
-    
+
     // Praktikum 2.7 Jobsheet 4 nomor 1
     public function level(): BelongsTo
     {
         return $this->belongsTo(LevelModel::class, 'level_id', 'level_id');
+    }
+
+    // Praktikum 2 jobsheet 7 
+    public function getRoleName(): string
+    {
+        return $this->level->level_nama;
+    }
+
+    public function hasRole($role): bool
+    {
+        return $this->level->level_kode == $role;
     }
 }
