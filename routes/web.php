@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
     Route::get('/', [WelcomeController::class, 'index']);
 
     // Praktikum 3 (Implementasi jQuery Datatable di AdminLTE) Jobsheet 5 nomor 3
-    Route::group(['prefix' => 'user'], function () {
+    Route::prefix('user')->middleware(['authorize:ADM, MNG'])->group(function () {
         Route::get('/', [UserController::class, 'index']); // menampilkan halaman awal user
         Route::post('/list', [UserController::class, 'list']); // menampilkan data user dalam bentuk json untuk datatables
         Route::get('/create', [UserController::class, 'create']); // menampilkan halaman form tambah user
@@ -96,7 +96,7 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
 
 
     // Routes for m_kategori
-    Route::group(['prefix' => 'kategori'], function () {
+    Route::prefix('kategori')->middleware(['authorize:ADM, MNG, STF'])->group(function () {
         Route::get('/', [KategoriController::class, 'index']);       // Halaman daftar kategori
         Route::post('/list', [KategoriController::class, 'list']);   // Data kategori untuk datatables (JSON)
         Route::get('/create', [KategoriController::class, 'create']); // Form tambah kategori
@@ -114,7 +114,7 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
     });
 
     // Routes for m_supplier
-    Route::group(['prefix' => 'supplier'], function () {
+    Route::prefix('supplier')->middleware(['authorize:ADM, MNG, STF'])->group(function () {
         Route::get('/', [SupplierController::class, 'index']);       // Halaman daftar supplier
         Route::post('/list', [SupplierController::class, 'list']);   // Data supplier untuk datatables (JSON)
         Route::get('/create', [SupplierController::class, 'create']); // Form tambah supplier
@@ -132,7 +132,7 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
     });
 
     // Routes for m_barang
-    Route::group(['prefix' => 'barang'], function () {
+    Route::prefix('barang')->middleware(['authorize:ADM, MNG, STF'])->group(function () {
         Route::get('/', [BarangController::class, 'index']);       // Halaman daftar barang
         Route::post('/list', [BarangController::class, 'list']);   // Data barang untuk datatables (JSON)
         Route::get('/create', [BarangController::class, 'create']); // Form tambah barang
