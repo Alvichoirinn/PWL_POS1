@@ -8,6 +8,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RegisterController;
 
 
 /*
@@ -20,6 +21,8 @@ use App\Http\Controllers\AuthController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('register', [AuthController::class, 'register'])->name('register');
+Route::post('register', [AuthController::class, 'postregister']);
 // Jobsheet 7 Praktikum 1 nomor 5
 Route::pattern('id', '[0-9]+'); // artinya ketika ada parameter {id}, maka harus beruapa angka
 
@@ -148,6 +151,5 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
         Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // untuk hapus data user ajax (jobsheet 6)
         Route::delete('/{id}', [BarangController::class, 'destroy']); // Hapus barang
     });
-
-
+    
 });
