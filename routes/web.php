@@ -150,7 +150,8 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
         Route::get('/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // untuk tampilkan form confirm delete user Ajax (jobsheet 6)
         Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // untuk hapus data user ajax (jobsheet 6)
         Route::delete('/{id}', [BarangController::class, 'destroy']); // Hapus barang
-        Route::get('/import', [BarangController::class, 'import']);
-        Route::post('/import_ajax', [BarangController::class, 'import_ajax']);
+        Route::get('/import', [BarangController::class, 'import']); // ajax form upload excel
+        Route::post('/import_ajax', [BarangController::class, 'import_ajax']); // ajax import excel
+        Route::get('/export_excel', [BarangController::class, 'export_excel']); // export excel
     });
 });
