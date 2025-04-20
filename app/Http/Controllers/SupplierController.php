@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 use App\Models\SupplierModel;
+use App\Models\LevelModel;
+use App\Models\BarangModel;
+use App\Models\KategoriModel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SupplierController extends Controller
 {
@@ -21,8 +27,9 @@ class SupplierController extends Controller
         ];
 
         $activeMenu = 'supplier';
+        $supplier = SupplierModel::all();
 
-        return view('supplier.index', compact('breadcrumb', 'page', 'activeMenu'));
+        return view('supplier.index', compact('breadcrumb', 'page', 'activeMenu', 'supplier'));
     }
 
     public function create()
@@ -44,11 +51,12 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'supplier_kode' => 'required|unique:m_supplier,supplier_kode',
+            'supplier_kode' => 'required|unique:supplier,supplier_kode',
             'supplier_nama' => 'required',
             'supplier_alamat' => 'required',
             'supplier_telp' => 'required',
         ]);
+
 
         SupplierModel::create($request->all());
 
@@ -250,4 +258,114 @@ class SupplierController extends Controller
         }
         return redirect('/');
     }
+
+    public function import()
+    {
+        return view('supplier.import');
+    }
+
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_supplier' => ['required', 'mimes:xlsx', 'max:1024'], // validasi file
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $file = $request->file('file_supplier');
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, false, true, true);
+
+            $insert = [];
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'supplier_kode' => $value['A'],
+                            'supplier_nama' => $value['B'],
+                            'supplier_alamat' => $value['C'],
+                            'created_at' => now(),
+                        ];
+                    }
+                }
+
+                if (count($insert) > 0) {
+                    SupplierModel::insertOrIgnore($insert);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport',
+                ]);
+            }
+        }
+        return redirect('/');
+    }
+
+    public function export_excel()
+    {
+        $suppliers = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Supplier');
+        $sheet->setCellValue('C1', 'Nama Supplier');
+        $sheet->setCellValue('D1', 'Alamat Supplier');
+
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+        $no = 1;
+        $row = 2;
+        foreach ($suppliers as $item) {
+            $sheet->setCellValue('A' . $row, $no);
+            $sheet->setCellValue('B' . $row, $item->supplier_kode);
+            $sheet->setCellValue('C' . $row, $item->supplier_nama);
+            $sheet->setCellValue('D' . $row, $item->supplier_alamat);
+            $row++;
+            $no++;
+        }
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data_Supplier_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $suppliers = SupplierModel::select('supplier_kode', 'supplier_nama', 'supplier_alamat')->get();
+
+        $pdf = Pdf::loadView('supplier.export_pdf', ['suppliers' => $suppliers]);
+        $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render();
+
+        return $pdf->stream('Data_Supplier_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
 }
+
+

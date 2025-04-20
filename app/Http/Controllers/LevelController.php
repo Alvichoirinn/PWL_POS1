@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
 use App\Models\LevelModel;
+use App\Models\BarangModel;
+use App\Models\KategoriModel;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LevelController extends Controller
 {
@@ -38,8 +42,9 @@ class LevelController extends Controller
         ];
 
         $activeMenu = 'level';
+        $level = LevelModel::all();
 
-        return view('level.index', compact('breadcrumb', 'page', 'activeMenu'));
+        return view('level.index', compact('breadcrumb', 'page', 'activeMenu', 'level'));
     }
 
     public function create()
@@ -251,24 +256,25 @@ class LevelController extends Controller
     }
 
     // Jobsheet 6 praktikum 3 nomor 3
-    public function confirm_ajax(string $id){
+    public function confirm_ajax(string $id)
+    {
         $level = LevelModel::find($id);
         return view('level.confirm_ajax', ['level' => $level]);
     }
 
     // Jobsheet 6 praktikum 3 nomor 5
-    public function delete_ajax (Request $request, $id)
+    public function delete_ajax(Request $request, $id)
     {
         // cek apakah request dari ajax
-        if ($request->ajax() || $request->wantsJson()){
+        if ($request->ajax() || $request->wantsJson()) {
             $level = LevelModel::find($id);
-            if($level){
+            if ($level) {
                 $level->delete();
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil dihapus'
                 ]);
-            }else {
+            } else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Data tidak ditemukan'
@@ -276,5 +282,109 @@ class LevelController extends Controller
             }
         }
         return redirect('/');
-    } 
+    }
+
+    public function import()
+    {
+        return view('level.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_level' => ['required', 'mimes:xlsx', 'max:1024'], // validasi file
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
+                ]);
+            }
+
+            $file = $request->file('file_level');
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, false, true, true);
+
+            $insert = [];
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'level_kode' => $value['A'],
+                            'level_nama' => $value['B'],
+                            'created_at' => now(),
+                        ];
+                    }
+                }
+
+                if (count($insert) > 0) {
+                    LevelModel::insertOrIgnore($insert);
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport',
+                ]);
+            }
+        }
+        return redirect('/');
+    }
+    public function export_excel()
+    {
+        $levels = LevelModel::select('level_kode', 'level_nama')->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Kode Level');
+        $sheet->setCellValue('C1', 'Nama Level');
+
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+
+        $row = 2;
+        $no = 1; // Variabel untuk nomor urut
+        foreach ($levels as $level) {
+            $sheet->setCellValue('A' . $row, $no); // Tambahkan nomor urut
+            $sheet->setCellValue('B' . $row, $level->level_kode);
+            $sheet->setCellValue('C' . $row, $level->level_nama);
+            $row++;
+            $no++; // Increment nomor urut
+        }
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $filename = 'Data_Level_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
+    }
+
+    public function export_pdf()
+    {
+        $levels = LevelModel::select('level_kode', 'level_nama')->get();
+
+        // use Barryvdh\DomPDF\Facade\Pdf
+        $pdf = Pdf::loadView('level.export_pdf', ['levels' => $levels]);
+        $pdf->setPaper('a4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render();
+
+        return $pdf->stream('Data_Level_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
 }
