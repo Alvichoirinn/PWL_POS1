@@ -9,6 +9,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ProfileController;
 
 
 /*
@@ -60,6 +61,12 @@ Route::middleware(['auth'])->group(function () { // artinya semua route di dalam
 
     // Praktikum 2 (Penerapan Layouting) Jobsheet 5 nomor 4
     Route::get('/', [WelcomeController::class, 'index']);
+    // Route untuk tampilkan form edit profil
+    Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
+    // Route untuk menyimpan perubahan profile (POST)
+    Route::post('profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
 
     // Praktikum 3 (Implementasi jQuery Datatable di AdminLTE) Jobsheet 5 nomor 3
     Route::prefix('user')->middleware(['authorize:ADM, MNG'])->group(function () {

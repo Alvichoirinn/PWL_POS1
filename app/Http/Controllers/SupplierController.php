@@ -28,8 +28,9 @@ class SupplierController extends Controller
 
         $activeMenu = 'supplier';
         $supplier = SupplierModel::all();
+        $authUser = auth()->user();
 
-        return view('supplier.index', compact('breadcrumb', 'page', 'activeMenu', 'supplier'));
+        return view('supplier.index', compact('breadcrumb', 'page', 'activeMenu', 'supplier', 'authUser'));
     }
 
     public function create()

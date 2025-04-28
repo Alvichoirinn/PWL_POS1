@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth; // Untuk autentikasi pengguna
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class UserController extends Controller
 {
@@ -208,8 +212,9 @@ class UserController extends Controller
         $activeMenu = 'user'; // set menu yang sedang aktif
 
         $level = LevelModel::all(); // ambil data level untuk filter level
+        $authUser = auth()->user();
 
-        return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
+        return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu, 'authUser' => $authUser]);
     }
 
     // Fungsi tambah modifikasi 2.6 nomor 6
@@ -563,7 +568,7 @@ class UserController extends Controller
             $rules = [
                 'file_user' => ['required', 'mimes:xlsx', 'max:1024']
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return response()->json([
@@ -572,21 +577,21 @@ class UserController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-    
+
             $file = $request->file('file_user');
             $reader = IOFactory::createReader('Xlsx');
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($file->getRealPath());
             $sheet = $spreadsheet->getActiveSheet();
             $data = $sheet->toArray(null, false, true, true);
-    
+
             $insert = [];
             if (count($data) > 1) {
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) {
                         // Cari level_id berdasarkan nama level
                         $level = LevelModel::where('level_nama', $value['D'])->first();
-    
+
                         if ($level) {
                             $insert[] = [
                                 'username' => $value['A'],
@@ -598,11 +603,11 @@ class UserController extends Controller
                         }
                     }
                 }
-    
+
                 if (count($insert) > 0) {
                     UserModel::insertOrIgnore($insert);
                 }
-    
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Data berhasil diimport'

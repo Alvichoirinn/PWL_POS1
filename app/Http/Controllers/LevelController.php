@@ -43,8 +43,9 @@ class LevelController extends Controller
 
         $activeMenu = 'level';
         $level = LevelModel::all();
+        $authUser = auth()->user();
 
-        return view('level.index', compact('breadcrumb', 'page', 'activeMenu', 'level'));
+        return view('level.index', compact('breadcrumb', 'page', 'activeMenu', 'level', 'authUser'));
     }
 
     public function create()

@@ -46,8 +46,9 @@ class KategoriController extends Controller
 
         $activeMenu = 'kategori';
         $kategori = KategoriModel::all();
+        $authUser = auth()->user();
 
-        return view('kategori.index', compact('breadcrumb', 'page', 'activeMenu', 'kategori'));
+        return view('kategori.index', compact('breadcrumb', 'page', 'activeMenu', 'kategori', 'authUser'));
     }
 
     public function create()
