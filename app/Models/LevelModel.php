@@ -12,7 +12,7 @@ class LevelModel extends Model
  
     protected $table = 'm_level'; // Pastikan tabelnya sesuai dengan database
     protected $primaryKey = 'level_id'; // pastikan ini sesuai dengan kolom primary key di tabel
-    public $timestamps = false; // karena tidak pakai updated_at dan created_at bawaan Laravel
+    public $timestamps = true; // karena tidak pakai updated_at dan created_at bawaan Laravel
 
     protected $fillable = ['level_kode', 'level_nama', 'created_at']; // untuk mass assignment
  
